@@ -81,41 +81,52 @@
   {/await} -->
 
   <div class="mx-2">
-    <p>Downloading finished. Please upload BOM.csv.</p>
-
-    <div class="file">
-      <label class="file-label">
-        <input
-          class="file-input"
-          type="file"
-          name="resume"
-          accept=".csv"
-          bind:files
-        />
-        <span class="file-cta">
-          <span class="file-icon">
-            <i class="fas fa-upload" />
-          </span>
-          <span class="file-label">Upload BOM.csv</span>
-        </span>
-      </label>
-    </div>
-
-    <div class="field mt-4">
-      <label class="label">Quantity</label>
-      <div class="control">
-        <input class="input" type="number" bind:value={quantity} />
+    <div class="columns">
+      <div class="column">
+        {#if !files}
+          <p>Downloading finished. Please upload BOM.csv:</p>
+        {:else}
+          <p>Use a different BOM.csv:</p>
+        {/if}
+        <div class="file">
+          <label class="file-label">
+            <input
+              class="file-input"
+              type="file"
+              name="resume"
+              accept=".csv"
+              bind:files
+            />
+            <span class="file-cta">
+              <span class="file-icon">
+                <i class="fas fa-upload" />
+              </span>
+              <span class="file-label">Upload BOM.csv</span>
+            </span>
+          </label>
+        </div>
+      </div>
+      <div class="column">
+        {#if files && files[0]}
+          {#await loadBomCsv()}
+            <p>Parsing BOM.csv...</p>
+          {:then}
+            <p>Quantity:</p>
+            <div class="field has-addons">
+              <div class="control">
+                <input class="input" type="number" bind:value={quantity} />
+              </div>
+              <div class="control">
+                <button class="button is-success" on:click={generateTable()}>
+                  Generate
+                </button>
+              </div>
+            </div>
+          {:catch error}
+            <p class="has-text-danger">{error.message}</p>
+          {/await}
+        {/if}
       </div>
     </div>
-
-    {#if files && files[0]}
-      {#await loadBomCsv()}
-        <p>Parsing BOM.csv...</p>
-      {:then}
-        {"asd"}
-      {:catch error}
-        <p class="has-text-danger">{error.message}</p>
-      {/await}
-    {/if}
   </div>
 </div>
