@@ -3,7 +3,6 @@ lockfileVersion: 5.3
 specifiers:
   '@rollup/plugin-commonjs': ^17.0.0
   '@rollup/plugin-node-resolve': ^11.0.0
-  csv-parse: ^5.0.4
   node-sass: ^7.0.1
   postcss: ^8.4.5
   rollup: ^2.3.4
@@ -14,12 +13,13 @@ specifiers:
   rollup-plugin-terser: ^7.0.0
   sirv-cli: ^1.0.0
   svelte: ^3.0.0
+  svelte-csv: ^1.2.0
   svelte-octicons: ^17.1.0
   svelte-preprocess: ^4.10.1
 
 dependencies:
-  csv-parse: 5.0.4
   sirv-cli: 1.0.14
+  svelte-csv: 1.2.0
 
 devDependencies:
   '@rollup/plugin-commonjs': 17.1.0_rollup@2.62.0
@@ -649,10 +649,6 @@ packages:
     dependencies:
       css-tree: 1.1.3
     dev: true
-
-  /csv-parse/5.0.4:
-    resolution: {integrity: sha512-5AIdl8l6n3iYQYxan5djB5eKDa+vBnhfWZtRpJTcrETWfVLYN0WSj3L9RwvgYt+psoO77juUr8TG8qpfGZifVQ==}
-    dev: false
 
   /dashdash/1.14.1:
     resolution: {integrity: sha1-hTz6D3y+L+1d4gMmuN1YEDX24vA=}
@@ -1713,6 +1709,10 @@ packages:
     engines: {node: '>=6'}
     dev: true
 
+  /papaparse/5.3.1:
+    resolution: {integrity: sha512-Dbt2yjLJrCwH2sRqKFFJaN5XgIASO9YOFeFP8rIBRG2Ain8mqk5r1M6DkfvqEVozVcz3r3HaUGw253hA1nLIcA==}
+    dev: false
+
   /parse-json/5.2.0:
     resolution: {integrity: sha512-ayCKvm/phCGxOkYRSCM82iDwct8/EonSEgCSxWxD7ve6jHggsFl4fZVQBPRNgQoKiuV/odhFrGzQXZwbifC8Rg==}
     engines: {node: '>=8'}
@@ -2692,6 +2692,12 @@ packages:
     dependencies:
       has-flag: 4.0.0
     dev: true
+
+  /svelte-csv/1.2.0:
+    resolution: {integrity: sha512-Df1RzXu6rU7Wy1QT8GEWZJNvk7Jskj3DwBPXD79CAKJ123SCVzcxeVdGqZ3slOHj/HcpACodVdQqNCTW+/poXQ==}
+    dependencies:
+      papaparse: 5.3.1
+    dev: false
 
   /svelte-octicons/17.1.0:
     resolution: {integrity: sha512-QZA5LTC89nz74JvOzHfI3yitAqw9r8z8a3pNxO0piQo8XdqQZIwP4EP5I5MpOnyQBf1iiNB9q5/C6+kVULZJiA==}

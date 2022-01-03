@@ -42,7 +42,14 @@
     return result;
   }
 
-  let promise = downloadJlcCsv();
+  let files;
+  async function loadBomCsv() {
+    let text = await files[0].text();
+    return text;
+  }
+
+  let quantity = 1;
+  $: quantity = typeof quantity == "number" && quantity < 1 ? 1 : quantity;
 </script>
 
 <svelte:head>
@@ -57,7 +64,7 @@
 
 <div class="container">
   <h1 class="title is-2 mx-2 mt-4">JLC Compontent Helper</h1>
-  <!-- {#await promise}
+  <!-- {#await downloadJlcCsv()}
     <div class="mx-2">
       <p>
         Downloading JLC Compontent info -
@@ -72,12 +79,19 @@
       >
     </div>
   {/await} -->
+
   <div class="mx-2">
     <p>Downloading finished. Please upload BOM.csv.</p>
 
     <div class="file">
       <label class="file-label">
-        <input class="file-input" type="file" name="resume" accept=".csv" />
+        <input
+          class="file-input"
+          type="file"
+          name="resume"
+          accept=".csv"
+          bind:files
+        />
         <span class="file-cta">
           <span class="file-icon">
             <i class="fas fa-upload" />
@@ -86,5 +100,22 @@
         </span>
       </label>
     </div>
+
+    <div class="field mt-4">
+      <label class="label">Quantity</label>
+      <div class="control">
+        <input class="input" type="number" bind:value={quantity} />
+      </div>
+    </div>
+
+    {#if files && files[0]}
+      {#await loadBomCsv()}
+        <p>Parsing BOM.csv...</p>
+      {:then}
+        {"asd"}
+      {:catch error}
+        <p class="has-text-danger">{error.message}</p>
+      {/await}
+    {/if}
   </div>
 </div>
