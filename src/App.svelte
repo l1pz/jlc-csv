@@ -50,16 +50,20 @@
     rel="stylesheet"
     href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css"
   />
+  <script
+    src="https://kit.fontawesome.com/7715a8d6b4.js"
+    crossorigin="anonymous"></script>
 </svelte:head>
 
 <div class="container">
   <h1 class="title is-2 mx-2 mt-4">JLC Compontent Helper</h1>
-  {#await promise}
+  <!-- {#await promise}
     <div class="mx-2">
       <p>
-        Downloading JLC Compontent info - <span class="has-text-weight-bold"
-          >{Math.round(downloadProgressPercent)}%</span
-        >
+        Downloading JLC Compontent info -
+        <span class="has-text-weight-bold">
+          {Math.round(downloadProgressPercent)}%
+        </span>
       </p>
       <progress
         class="progress is-primary"
@@ -67,9 +71,20 @@
         max="100">{Math.round(downloadProgressPercent)}</progress
       >
     </div>
-  {:then}
-    <div class="mx-2">
-      <p>Downloading finished.</p>
+  {/await} -->
+  <div class="mx-2">
+    <p>Downloading finished. Please upload BOM.csv.</p>
+
+    <div class="file">
+      <label class="file-label">
+        <input class="file-input" type="file" name="resume" accept=".csv" />
+        <span class="file-cta">
+          <span class="file-icon">
+            <i class="fas fa-upload" />
+          </span>
+          <span class="file-label">Upload BOM.csv</span>
+        </span>
+      </label>
     </div>
-  {/await}
+  </div>
 </div>
