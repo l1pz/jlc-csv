@@ -1,2 +1,2 @@
 export let config = {};
-config.jlcCsvUrl = "https://jlcpcb.com/componentSearch/uploadComponentInfo";
+config.jlcCsvUrl = "http://localhost:5000/jlc.csv"; //"https://jlcpcb.com/componentSearch/uploadComponentInfo";
