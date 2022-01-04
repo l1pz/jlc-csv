@@ -22,7 +22,10 @@
     let response = await fetch(config.jlcCsvUrl);
 
     if (!response.ok)
-      throw new Error("Couldn't download JLCPCB part information.");
+      throw new Error(
+        "Couldn't download JLCPCB part information.\n" +
+          JSON.stringify(response)
+      );
 
     const reader = response.body.getReader();
 
