@@ -20,11 +20,11 @@
   async function downloadAndParseJlcCsv() {
     // Step 1: start the fetch and obtain a reader
     let response = await fetch(config.jlcCsvUrl);
-
+    console.log(response);
     if (!response.ok)
       throw new Error(
-        "Couldn't download JLCPCB part information.\n" +
-          JSON.stringify(response)
+        "Couldn't download JLCPCB part information. Response status: " +
+          response.status
       );
 
     const reader = response.body.getReader();
