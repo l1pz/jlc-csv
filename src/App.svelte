@@ -19,7 +19,9 @@
   // Source: https://javascript.info/fetch-progress
   async function downloadAndParseJlcCsv() {
     // Step 1: start the fetch and obtain a reader
-    let response = await fetch(config.jlcCsvUrl);
+    let response = await fetch(config.jlcCsvUrl, {
+      headers: { "Content-Type": "application/json" },
+    });
     console.log(response);
     if (!response.ok)
       throw new Error(
