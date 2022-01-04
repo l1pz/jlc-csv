@@ -1,3 +1,3 @@
 export let config = {};
 config.jlcCsvUrl =
-  "https://cors-anywhere.herokuapp.com/https://jlcpcb.com/componentSearch/uploadComponentInfo";
+  "https://api.allorigins.win/raw?url=https://jlcpcb.com/componentSearch/uploadComponentInfo";
