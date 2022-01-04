@@ -1,14 +1,28 @@
 <script>
-  // TODO: make sure it doesn't parse jlc.cs every time bom.cs is changed
   import { config } from "./config.js";
   import Papa from "papaparse";
 
   let downloadProgressPercent = 0;
-  let jlcCsv;
+  let jlcData;
+
+  let selectedFiles;
+  let bomCsv;
+
+  let quantity = 1;
+  $: quantity = typeof quantity == "number" && quantity < 1 ? 1 : quantity;
+
+  let showTable = false;
+  let generateTablePromise;
+  let tableParts = [];
+  let minMaxPcb = Infinity;
+
   // Source: https://javascript.info/fetch-progress
-  async function downloadJlcCsv() {
+  async function downloadAndParseJlcCsv() {
     // Step 1: start the fetch and obtain a reader
     let response = await fetch(config.jlcCsvUrl);
+
+    if (!response.ok)
+      throw new Error("Couldn't download JLCPCB part information.");
 
     const reader = response.body.getReader();
 
@@ -38,36 +52,37 @@
     }
 
     // Step 5: decode into a string
-    jlcCsv = new TextDecoder("utf-8").decode(chunksAll);
+    const jlcCsv = new TextDecoder("utf-8").decode(chunksAll);
+
+    // Step 6: parse csv string
+    jlcData = Papa.parse(jlcCsv, { header: true }).data;
   }
 
-  let files;
-  let bomCsv;
-
-  let quantity = 1;
-  $: quantity = typeof quantity == "number" && quantity < 1 ? 1 : quantity;
-
-  let showTable = false;
-  let generateTablePromise;
-  let tableParts = [];
   async function generateTable() {
-    bomCsv = await files[0].text();
+    bomCsv = await selectedFiles[0].text();
     showTable = true;
-    const config = { header: true };
-    const bomData = Papa.parse(bomCsv, config).data;
-    const jlcData = Papa.parse(jlcCsv, config).data;
-
+    const bomData = Papa.parse(bomCsv, { header: true }).data;
+    console.log(jlcData[0]);
+    console.log(Object.keys(jlcData[0]));
+    for (let spart of jlcData) {
+      console.log(spart["LSCS Part"]);
+    }
+    tableParts = [];
+    minMaxPcb = Infinity;
     for (let part of bomData) {
       const partId = part["Supplier Part"];
       if (partId === "") continue;
 
       const jlcPart = jlcData.find((x) => x["LCSC Part"] == partId);
+      console.log(partId);
       if (!jlcPart) continue;
 
       const stock = jlcPart["Stock"];
       const quantity = part["Quantity"];
+      const maxPcb = Math.floor(stock / quantity);
+      if (minMaxPcb > maxPcb) minMaxPcb = maxPcb;
       part["Stock"] = stock;
-      part["Max PCB"] = Math.floor(stock / quantity);
+      part["Max PCB"] = maxPcb;
       tableParts.push(part);
     }
   }
@@ -90,10 +105,10 @@
 
 <div class="container">
   <h1 class="title is-2 mx-2 mt-4">JLCPCB Compontent Stock Helper</h1>
-  {#await downloadJlcCsv()}
+  {#await downloadAndParseJlcCsv()}
     <div class="mx-2">
       <p>
-        Downloading JLC Compontent info -
+        Downloading and parsing JLCPCB compontent info -
         <span class="has-text-weight-bold">
           {Math.round(downloadProgressPercent)}%
         </span>
@@ -108,8 +123,8 @@
     <div class="mx-2">
       <div class="columns">
         <div class="column">
-          {#if !files}
-            <p>Downloading finished. Please upload BOM.csv:</p>
+          {#if !selectedFiles}
+            <p>Downloading and parsing finished. Please upload a BOM file:</p>
           {:else}
             <p>Use a different BOM.csv:</p>
           {/if}
@@ -120,34 +135,57 @@
                 type="file"
                 name="resume"
                 accept=".csv"
-                bind:files
+                bind:files={selectedFiles}
                 on:change={changeFile}
               />
               <span class="file-cta">
                 <span class="file-icon">
                   <i class="fas fa-upload" />
                 </span>
-                <span class="file-label">Upload BOM.csv</span>
+                <span class="file-label">Upload BOM file</span>
               </span>
             </label>
+            <span class="file-name">
+              {selectedFiles && selectedFiles[0]
+                ? selectedFiles[0].name
+                : "BOM.csv"}
+            </span>
           </div>
         </div>
-        <div class="column">
-          {#if files && files[0]}
-            {#await generateTablePromise}
-              <p><i class="fas fa-cog fa-spin" />&nbsp;Parsing CSV Files...</p>
-            {:then}
+
+        {#if selectedFiles && selectedFiles[0]}
+          {#await generateTablePromise}
+            <div class="column">
+              <p>
+                <i class="fas fa-cog fa-spin" />&nbsp;Processing CSV Files...
+              </p>
+            </div>
+          {:then}
+            {#if minMaxPcb < Infinity}
+              <div class="column">
+                <p>Max PCBs:</p>
+                <div class="control">
+                  <input
+                    class="input"
+                    type="number"
+                    value={minMaxPcb}
+                    readonly
+                  />
+                </div>
+              </div>
+            {/if}
+            <div class="column">
               <p>Quantity:</p>
               <div class="field">
                 <div class="control">
                   <input class="input" type="number" bind:value={quantity} />
                 </div>
               </div>
-            {:catch error}
-              <p class="has-text-danger">{error.message}</p>
-            {/await}
-          {/if}
-        </div>
+            </div>
+          {:catch error}
+            <p class="has-text-danger">{error.message}</p>
+          {/await}
+        {/if}
       </div>
       {#if showTable}
         <table class="table">
@@ -175,6 +213,6 @@
       {/if}
     </div>
   {:catch error}
-    {"Couldn't download."}
+    <p class="has-text-danger">{error.message}</p>
   {/await}
 </div>
