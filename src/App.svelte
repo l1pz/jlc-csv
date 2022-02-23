@@ -90,12 +90,21 @@
       part["Max PCB"] = maxPcb;
       tableParts.push(part);
     }
+    
+  }
+
+  function redsToTop() {
+    const reds = tableParts.filter((part) => part["Max PCB"] < quantity);
+    const nonReds = tableParts.filter((part) => part["Max PCB"] >= quantity);
+    tableParts = [...reds, ...nonReds];
   }
 
   function changeFile() {
     showTable = false;
     generateTablePromise = generateTable();
   }
+
+  $:quantity && redsToTop(tableParts);
 </script>
 
 <svelte:head>
