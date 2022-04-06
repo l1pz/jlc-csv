@@ -90,7 +90,6 @@
       part["Max PCB"] = maxPcb;
       tableParts.push(part);
     }
-    
   }
 
   function redsToTop() {
@@ -104,7 +103,7 @@
     generateTablePromise = generateTable();
   }
 
-  $:quantity && redsToTop(tableParts);
+  $: quantity && redsToTop(tableParts);
 </script>
 
 <svelte:head>
@@ -202,28 +201,30 @@
         {/if}
       </div>
       {#if showTable}
-        <table class="table">
-          <thead>
-            <tr>
-              {#each Object.keys(tableParts[0]) as header}
-                <th>{header}</th>
-              {/each}
-            </tr>
-          </thead>
-          <tbody>
-            {#each tableParts as part}
-              <tr
-                class={part["Max PCB"] < quantity
-                  ? "has-text-light has-background-danger-dark"
-                  : ""}
-              >
-                {#each Object.keys(part) as key}
-                  <td>{part[key]}</td>
+        <div style="overflow-x:scroll">
+          <table class="table wrap-table">
+            <thead>
+              <tr>
+                {#each Object.keys(tableParts[0]) as header}
+                  <th>{header}</th>
                 {/each}
               </tr>
-            {/each}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {#each tableParts as part}
+                <tr
+                  class={part["Max PCB"] < quantity
+                    ? "has-text-light has-background-danger-dark"
+                    : ""}
+                >
+                  {#each Object.keys(part) as key}
+                    <td>{part[key]}</td>
+                  {/each}
+                </tr>
+              {/each}
+            </tbody>
+          </table>
+        </div>
       {/if}
     </div>
   {:catch error}
